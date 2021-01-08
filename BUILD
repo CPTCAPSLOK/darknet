@@ -4,12 +4,13 @@ load("//bazel:process_settings.bzl", "process_settings")
 CUDA = False
 CUDNN = False
 CUDNN_HALF = False
-OPENCV = False
-AVX = False
-OPENMP = False
+OPENCV = True
+AVX = True
+OPENMP = True
 ZED_CAMERA = False
 ###################################
 COPTS, LINKOPTS, DEPS, DEFINES = process_settings(CUDA=CUDA, CUDNN=CUDNN, CUDNN_HALF=CUDNN_HALF, OPENCV=OPENCV, AVX=AVX, OPENMP=OPENMP, ZED_CAMERA=ZED_CAMERA)
+
 
 cc_library(
     name = "libdarknet",
@@ -41,6 +42,7 @@ cc_library(
     defines = DEFINES + [
         "LIB_EXPORTS",
     ],
+    linkstatic = False,
 )
 
 
@@ -66,4 +68,5 @@ cc_binary(
     ],
     deps = DEPS,
     defines = DEFINES,
+    linkstatic = True,
 )
