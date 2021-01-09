@@ -1,5 +1,6 @@
 load("@rules_cc//cc:defs.bzl", "cc_library", "cc_binary")
 load("//bazel:process_settings.bzl", "process_settings")
+load("@com_github_google_rules_install//installer:def.bzl", "installer")
 ###################################
 CUDA = False
 CUDNN = False
@@ -13,7 +14,7 @@ COPTS, LINKOPTS, DEPS, DEFINES = process_settings(CUDA=CUDA, CUDNN=CUDNN, CUDNN_
 
 
 cc_library(
-    name = "libdarknet",
+    name = "darknetlib",
     hdrs = glob([
         "include/**/*.h",
 	    "3rdparty/stb/include/**/*.h",
@@ -29,8 +30,6 @@ cc_library(
     ],
     ),
     copts = COPTS + [
-        "-shared",
-        "-fpic",
         "-fvisibility=hidden",
     ],
     linkopts = LINKOPTS,
@@ -42,9 +41,23 @@ cc_library(
     defines = DEFINES + [
         "LIB_EXPORTS",
     ],
-    linkstatic = False,
+    linkstatic = False
 )
 
+cc_binary(
+    name = "uselib",
+    srcs = [
+        "src/yolo_console_dll.cpp",
+        "include/yolo_v2_class.hpp",
+    ],
+    includes = [
+        "include",
+    ],
+    deps = [
+        ":darknetlib"
+    ],
+    linkstatic = False,
+)
 
 cc_binary(
     name = "darknet",
@@ -68,5 +81,22 @@ cc_binary(
     ],
     deps = DEPS,
     defines = DEFINES,
-    linkstatic = True,
+    linkstatic = False,
+)
+
+installer(
+    name = "install_darknet",
+    data = [":darknet"],
+)
+
+installer(
+    name = "install_uselib",
+    data = [":uselib"],
+    target_subdir = "lib"
+)
+
+installer(
+    name = "install_lib",
+    data = [":darknetlib"],
+    target_subdir = "lib"
 )

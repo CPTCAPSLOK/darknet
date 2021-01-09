@@ -1,27 +1,10 @@
-load("//bazel:http_archive.bzl", "get_http_archive")
-#########################################################
-get_http_archive("rules_foreign_cc")
-
-new_local_repository(
-    name = "opencv",
-    path = "/opt/opencv",
-    build_file = "//bazel/external:opencv.BUILD",
-)
-
-new_local_repository(
-    name = "zed_camera",
-    path = "/usr/local/zed",
-    build_file = "//bazel/external:zed_camera.BUILD",
-)
-
-new_local_repository(
-    name = "cuda",
-    path = "/usr/lib/cuda",
-    build_file = "//bazel/external:cuda.BUILD",
-)
-
-new_local_repository(
-    name = "cuda_cudnn",
-    path = "/usr/lib/cuda",
-    build_file = "//bazel/external:cuda_cudnn.BUILD",
-)
+load("//bazel:repositories.bzl", "get_dependencies", "build_cmake_targets")
+get_dependencies()
+load("@com_github_google_rules_install//:deps.bzl", "install_rules_dependencies")
+install_rules_dependencies()
+load("@com_github_google_rules_install//:setup.bzl", "install_rules_setup")
+install_rules_setup()
+load("@rules_foreign_cc//:workspace_definitions.bzl", "rules_foreign_cc_dependencies")
+rules_foreign_cc_dependencies()
+all_content = """filegroup(name = "all", srcs = glob(["**"]), visibility = ["//visibility:public"])"""
+build_cmake_targets(all_content)

@@ -1,14 +1,12 @@
 def process_settings(CUDA, CUDNN, CUDNN_HALF, OPENCV, AVX, OPENMP, ZED_CAMERA):
 
-    COPTS = [
-        "-Wl,-rpath,./_solib_k8/_U_S_Sbazel_Sexternal_ScmakeTargets_Copencv___Ubazel_Sexternal_ScmakeTargets_Sopencv_Slib"
-    ]
+    COPTS = []
     DEPS = []
     DEFINES = []
     LINKOPTS = [
         "-lpthread",
         "-lm",
-        "-Wl,-rpath,./_solib_k8/_U_S_Sbazel_Sexternal_ScmakeTargets_Copencv___Ubazel_Sexternal_ScmakeTargets_Sopencv_Slib",
+        "-Wl,-rpath,'$$ORIGIN'",
     ]
 
     if CUDA and not CUDNN:
@@ -23,7 +21,7 @@ def process_settings(CUDA, CUDNN, CUDNN_HALF, OPENCV, AVX, OPENMP, ZED_CAMERA):
         DEFINES.append("CUDNN_HALF")
 
     if OPENCV:
-        DEPS.append("@opencv")
+        DEPS.append("//bazel/external/cmakeTargets:opencv")
         DEFINES.append("OPENCV")
 
     if AVX:
@@ -43,7 +41,6 @@ def process_settings(CUDA, CUDNN, CUDNN_HALF, OPENCV, AVX, OPENMP, ZED_CAMERA):
         LINKOPTS.append("-lgomp")
 
     if ZED_CAMERA:
-        
         DEPS.append("@zed_camera")
         DEFINES.append("ZED_STEREO")
 
